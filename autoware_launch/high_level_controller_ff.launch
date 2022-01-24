@@ -1,0 +1,69 @@
+<!-- -->
+<launch>
+
+<!-- 
+    # op_waypoint_follower #
+    In:  /vehicle_status 
+    In:  /current_pose
+    In:  /op_current_behavior
+    In:  /op_local_selected_trajectory
+    Out: /op_control_cmd
+  -->
+<include file="$(find op_waypoint_follower)/launch/op_waypoint_follower_car.launch" > 
+	
+	<arg name="enableSimulationMode" 		default="2" /> <!-- No Simulation = 0, Simulation Mode = 1, Direct Control = 2 -->
+	
+	<arg name="steer_mode" 					default="1" /> <!-- steer angle = 0, steer torque = 1 -->
+	<arg name="drive_mode" 					default="1" /> <!-- velocity = 0, pedals stroke = 1 -->	
+		
+	<arg name="control_frequency" 			default="50"/> <!-- Hz -->
+	<arg name="min_follow_safe_distance"	default="4.0"/> <!-- m, it should be smaller than min follow distance in op_common_params -->
+	
+	<arg name="max_steer_value"				default="11.52"/> <!-- radians -->		
+	<arg name="max_steer_torque"			default="100"/> <!-- %100 percentage, min = 0, max = 100 -->
+	<arg name="min_steer_torque"			default="-100"/> <!-- %100 percentage, min = 0, max = -100 --> 
+	
+	<arg name="max_accel_value"				default="70"/> <!-- %100 percentage, min = 0, max = 100 -->
+	<arg name="max_brake_value"				default="100"/> <!-- %100 percentage, min = 0, max = 100 -->
+	
+	<!-- These gains used for steer_mode = 0 -->
+	<arg name="steerAngleGainKP" 			default="1.0"/>
+	<arg name="steerAngleGainKI" 			default="0.0"/>
+	<arg name="steerAngleGainKD" 			default="0.0"/>
+	
+	<!-- Next two parameters are used for ACC tuning, will only be used when drive_mode param above is set to (0) which means velocity mode -->
+	<!-- If use_internal_acc parameter in op_common_params is set to "true", these values will be ignored and trajectory assigned value will be used directly as target velocity -->
+	<arg name="accelerationPushRatio" 		default="1.0" /> <!-- push the velocity to increase even when the velocity feedback signal from sensing is very small or delayed, contribute to final acceleration. where 1 predefined acceleration value is used --> 
+	<arg name="brakingPushRatio" 			default="1.0" /> <!-- push the velocity to decrease even when the velocity feedback signal from sensing is very small or delayed, contribute to final deceleration. where 1 predefined deceleration value is used -->
+	
+	<!-- These gains used for steer_mode = 1 -->
+	<arg name="steerTorqueGainKP" 			default="85.0"/>
+	<arg name="steerTorqueGainKI" 			default="0.0"/>
+	<arg name="steerTorqueGainKD" 			default="0.0"/>
+	
+	<arg name="accelGainKP" 				default="6.0"/>
+	<arg name="accelGainKI" 				default="0.5"/>
+	<arg name="accelGainKD" 				default="0.5"/>
+	
+	<arg name="brakeGainKP" 				default="8.0"/>
+	<arg name="brakeGainKI" 				default="2.5"/>
+	<arg name="brakeGainKD" 				default="0.0"/> 	
+
+	<arg name="accelInitDelay" 				default="0.0"/> <!-- seconds --> 
+	<arg name="accelAvgDelay" 				default="0.0"/> <!-- seconds --> 
+	<arg name="avgAcceleration"				default="2.75"/> <!-- m/s2 -->
+	
+	<arg name="avg_engine_brake_accel"		default="-1.0"/> <!-- m/s2 -->
+	<arg name="brakeInitDelay" 				default="0.0"/> <!-- seconds -->
+	<arg name="brakeAvgDelay" 				default="0.0"/> <!-- seconds -->
+	<arg name="avgDeceleration"				default="-2.75"/> <!-- m/s2 -->
+	
+	<!-- used only when enableSimulationMode = true --> 		
+	<arg name="pose_topic" 					default="sim_pose"/>
+  	<arg name="localizer_pose_topic" 		default="sim_localizer_pose"/>
+  	<arg name="velocity_topic" 				default="sim_velocity"/>
+  	<arg name="vehicle_status_topic" 		default="sim_vehicle_status"/>
+	
+</include>
+
+</launch>

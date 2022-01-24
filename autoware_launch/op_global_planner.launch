@@ -1,0 +1,34 @@
+<!-- -->
+<launch>
+<arg name="op_logs_experiment_folder_name" default=""/>
+<arg name="kml_map_path" default=""/>
+<arg name='external_route_topic' default=''/>
+
+  <!-- 
+    # open planner, global planner params #
+  -->
+<include file="$(find op_global_planner)/launch/op_global_planner.launch">
+	<arg name="pathDensity" 		default="1.0" /> <!-- distance between each two waypoints-->
+	<arg name="enableSmoothing" 	default="true" /> 
+	<arg name="enableLaneChange" 	default="true" /> 
+	<arg name="enableRvizInput" 	default="true" /> 
+	<arg name="enableHMI" 			default="false" /> 
+	<arg name="experimentName" 		value='$(arg op_logs_experiment_folder_name)' />
+	<arg name="enableReplan"    	default="true" />
+	<arg name="goalConfirmDistance" default="10.0" />	
+	<arg name="velocitySource"		default="0" /> <!-- read velocities from (0- Odometry, 1- autoware current_velocities, 2- car_info 3- vehicle status) -->
+	<arg name="vel_odom_topic"		default="/odom" />
+	<arg name="vel_curr_topic"		default="/current_velocity" />
+	<arg name="vel_can_topic"		default="/can_info" />
+	<arg name="vehicle_status_topic" default="/vehicle_status" />
+	<arg name="mapSource" 			default="2" /> <!-- Autoware=0, Vector Map Folder=1, kml file=2, lanelet2 file=3, kml map file path from runtime manager = 4 -->	
+	<arg name="mapFileName" 		value='$(arg kml_map_path)' /> <!-- incase of kml map source -->
+	<arg name="lanelet2_origin"		default="0,0,0" /> <!-- GPS origin for lanelet2 map files, Lat, Long, Alt  --> 	
+	<arg name="destinationFileName" default="" />		
+	<arg name="external_waypoints_topic" value="$(arg external_route_topic)" />	<!-- if topic name is assigned, global planner will wait for the external path, not global path will be generated -->	
+	<arg name="enableExploreMode" 	value="false" />	<!-- if true, the external waypoints will not be used, the new global plan will be generated randomly and replanning will be enabled, and lane change will be disabled, and enableRvizInput will be disabled -->
+  </include> 
+
+
+</launch>
+

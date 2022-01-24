@@ -1,0 +1,100 @@
+<!-- -->
+<launch>  
+  <arg name="enable_openplanner_simulation" default="false"/>
+  <arg name="enable_object_insert" default="false"/>
+
+ <!-- 
+    # op_perception_simulator #
+  -->
+<group if="$(arg enable_openplanner_simulation)">
+	<include file="$(find op_simulation_package)/launch/op_perception_simulator.launch">
+		<arg name="useNavGoalToSetStaticObstacle" value="$(arg enable_object_insert)" />
+	</include>
+</group>
+
+
+<!-- 
+    # (Yolo4) traffic light detector #    
+  -->
+<include file="$(find op_tlr)/launch/op_tlr.launch">
+  <arg name="yolo_config_file" 		default="$(env TEAM_CODE_ROOT)/darknet/tlr/yolov4-bosch.cfg" />
+  <arg name="yolo_weights_file" 		default="$(env TEAM_CODE_ROOT)/darknet/tlr/yolov4-bosch.weights" />
+  <arg name="detection_threshold" 	default="0.35" />
+  <arg name="camera_id" default="/"/>
+  <arg name="camera_info_src" default="/camera_info"/>
+  <arg name="image_src" default="/image_raw"/>
+</include>
+
+  <!-- 
+    # Vision darknet (Yolo3) detector #    
+  -->
+  <!--
+    <include file="$(find vision_darknet_detect)/launch/vision_yolo3_detect.launch">
+  <arg name="gpu_device_id" default="0"/>
+  <arg name="score_threshold" default="0.30"/>
+  <arg name="nms_threshold" default="0.30"/>
+
+  <arg name="network_definition_file" default="$(env TEAM_CODE_ROOT)/carla-autoware/autoware-contents/config/yolov3/yolov3.cfg"/>
+  <arg name="pretrained_model_file" default="$(env TEAM_CODE_ROOT)/carla-autoware/autoware-contents/config/yolov3/yolov3.weights"/>
+  <arg name="names_file" default="$(env TEAM_CODE_ROOT)/carla-autoware/autoware-contents/config/yolov3/coco.names"/>
+
+  <arg name="camera_id" default="/"/>
+  <arg name="image_src" default="/image_raw"/>
+</include> -->
+
+  <!-- 
+    # lidar_euclidean_cluster_detect #
+    @todo: still required?
+  -->
+<group unless="$(arg enable_openplanner_simulation)">
+  <include file="$(find lidar_euclidean_cluster_detect)/launch/lidar_euclidean_cluster_detect.launch">
+    <arg name="output_frame" value="velodyne" />
+    <arg name="points_node" default="/points_no_ground" />
+  <arg name="remove_ground" default="false" />
+  <arg name="downsample_cloud" default="false" /> 
+  <arg name="leaf_size" default="0.1" />
+  <arg name="cluster_size_min" default="5" />
+  <arg name="cluster_size_max" default="100000" />
+  <arg name="sync" default="false" />
+  <arg name="use_diffnormals" default="false" />
+  <arg name="pose_estimation" default="false" />
+  <arg name="clip_min_height" default="-1.6" />
+  <arg name="clip_max_height" default="2.5" />
+<!--  <arg name="output_frame" default="velodyne" /> -->
+  <arg name="use_gpu" default="true" />  
+  <arg name="cluster_merge_threshold" default="0" />
+  <arg name="clustering_distance" default="0.75" />
+  <arg name="use_vector_map" default="false" />  
+  </include>
+</group>
+ <!-- 
+    # lidar_kf_contour_track #
+    @todo: still required?
+  -->
+<include file="$(find lidar_kf_contour_track)/launch/lidar_kf_contour_track.launch">
+	<arg name="namespace" default="/detection/contour_tracker"/>
+  <arg name="tracker_input_topic" default="/detection/lidar_detector/objects" />
+  <arg name="tracker_output_topic" default="/detection/contour_tracker/objects" /> 
+  <arg name="tracking_frame" default="/map" />
+	<arg name="vehicle_width" default="1.85" />
+	<arg name="vehicle_length" default="4.2" />	
+	<arg name="min_object_size" default="0.05" />
+	<arg name="max_object_size" default="20.0" />
+	<arg name="polygon_quarters" default="16" />
+	<arg name="polygon_resolution" default="0.5" />
+	<arg name="tracking_type" default="1" /> <!-- 0 for association only, 1 for simple kf tracking, 2 for smart contour tracker -->
+	<arg name="max_association_distance" default="4" />
+	<arg name="max_association_size_diff" default="0.0" />	
+	<arg name="max_remeber_time" default="1.5" />
+	<arg name="trust_counter" default="2" />	
+	<arg name="enableSimulationMode" value="$(arg enable_openplanner_simulation)" />
+	<arg name="enableStepByStepMode" default="false" />	
+	<arg name="vector_map_filter_distance" default="5.0" /> <!-- set 0 to disable vector map filtering  -->
+	<arg name="map_filter_type" default="2" /> <!-- 0 for disable filtering, 1 for boundary (wayarea) filtering, 2 for distance to centerline filtering -->	
+	<arg name="enableLogging" default="false" />
+	<arg name="enableInternalVisualization" default="true" />
+	<arg name="useDetectionHulls" default="false" />
+
+  </include> 
+
+</launch>

@@ -1,0 +1,97 @@
+<!-- -->
+<launch>  
+  <arg name="kml_map_path" default=""/>
+
+  <!--
+    # vehicle_model #
+    provides the vehicle_model mesh to rviz
+  -->
+  <include file="$(find vehicle_description)/launch/vehicle_model.launch">
+    <arg name="offset_x" default="0.0"/>
+    <arg name="model_path" default="$(find vehicle_description)/urdf/prius.urdf"/>
+  </include>
+ 
+  <include file="$(find op_gnss_localizer)/launch/op_fix2tfpose.launch" >    
+  	<arg name="mapSource" default="2" /> <!-- Autoware=0, Vector Map Folder=1, kml=2 -->
+	  <arg name="mapFileName" value='$(arg kml_map_path)' />
+  </include>
+
+  <!-- Setup -->
+  <arg name="x" value="0" />
+  <arg name="y" value="0" />
+  <arg name="z" value="1.6" />
+  <arg name="yaw" value="0.0" />
+  <arg name="pitch" value="0.0" />
+  <arg name="roll" value="0.0" />
+  <arg name="frame_id" value="/base_link" />
+  <arg name="child_frame_id" value="/velodyne" />
+  <arg name="period_in_ms" value="50" />
+
+  <!-- tf parameters for ndt_matching -->
+  <param name="tf_x" value="$(arg x)" />
+  <param name="tf_y" value="$(arg y)" />
+  <param name="tf_z" value="$(arg z)" />
+  <param name="tf_yaw" value="$(arg yaw)" />
+  <param name="tf_pitch" value="$(arg pitch)" />
+  <param name="tf_roll" value="$(arg roll)" />
+  <param name="localizer" value="velodyne" />
+
+  <!-- 
+    # points downsampler #
+    Reduces the amount of points. Resulting point cloud is used by ndt_matching
+    In:  /points_raw
+    Out: /filtered_points
+  -->
+  <include file="$(find points_downsampler)/launch/points_downsample.launch" />
+  <arg name="voxel_leaf_size"      default="2.5"/>
+  <arg name="measurement_range"     default="100.0"/>
+
+  <node pkg="rostopic" type="rostopic" name="config_voxel_grid_filter" ns="autoware_launcher"
+      args="pub --latch --once /config/voxel_grid_filter autoware_config_msgs/ConfigVoxelGridFilter '{
+        voxel_leaf_size:  $(arg voxel_leaf_size),
+        measurement_range:  $(arg measurement_range)
+     }'"/>
+
+  <!--<include file="$(find lidar_localizer)/launch/ndt_matching_monitor.launch">
+    <arg name="iteration_threshold_warn" default="10" />
+    <arg name="iteration_threshold_stop" default="30" />
+    <arg name="score_delta_threshold" default="20.0" />
+    <arg name="min_stable_samples" default="40.0" />
+    <arg name="fatal_time_threshold" default="2.0" />
+  </include> -->
+
+  <!-- 
+    # ndt_matching #
+    In:  /filted_points  (filtered pointcloud)
+         /gnss_pose      (pose from gnss)
+         /vehicle/odom   (odometry)
+         /initialpose    (currently not published)
+    Out: /localizer_pose (estimated pose)
+  -->
+ <include file="$(find lidar_localizer)/launch/ndt_matching.launch">
+    <arg name="get_height" value="true" />
+    <arg name="use_gnss" default="true" />
+    <arg name="use_odom" default="false" /> 
+    <arg name='use_imu' value='false'/>    
+    <arg name="imu_upside_down" default="false" />
+    <arg name="imu_topic" default="/imu_raw" />
+    <arg name="queue_size" default="1" />
+    <arg name="offset" default="linear" />  
+    <arg name="use_local_transform" default="false" />        
+    <arg name="gnss_reinit_fitness" default="10000.0" />
+  </include> 
+
+
+  <!-- 
+    # vel_pose_connect #
+    the vehicle status is read and a can_velocity (geometry_msgs::TwistStamped) is calculated (by can_status_translator)
+    In:  /vehicle_status
+    In:  /can_info            (@todo not published yet)
+    Out: /linear_velocity_viz (visualization of velocity)
+    out: /can_velocity
+  -->
+  <include file="$(find autoware_connector)/launch/vel_pose_connect.launch">
+    <arg name="topic_pose_stamped" value="/ndt_pose" />
+    <arg name="topic_twist_stamped" value="/estimate_twist" />
+  </include>
+</launch>

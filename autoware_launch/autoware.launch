@@ -1,0 +1,45 @@
+<!-- -->
+<launch>  
+  <arg name="enable_openplanner_simulation" default="false"/>
+  <arg name="enable_object_insert" default="false"/>
+  <arg name="op_logs_experiment_folder_name" default="carla_complete_test"/>
+  <arg name="kml_map_path" default=""/>
+  <arg name="pointcloud_map_path" default=""/>    
+  <arg name='external_route_topic' default=''/>
+ 
+
+ <!-- <node pkg="carla_vel_to_autoware" type="carla2autowarestatus" name="carla2autowarestatus" output="screen"/>   -->
+ <node name='rviz' pkg='rviz' type='rviz' args='-d $(env TEAM_CODE_ROOT)/op.rviz'/>
+ <node name='map_loader' pkg='map_file' type='points_map_loader' args=' noupdate $(arg pointcloud_map_path)'/>
+
+  <include file="$(env TEAM_CODE_ROOT)/autoware_launch/op_global_planner.launch"> 
+	  <arg name="op_logs_experiment_folder_name" value='$(arg op_logs_experiment_folder_name)'/>
+	  <arg name="kml_map_path" value='$(arg kml_map_path)'/>    
+    <arg name='external_route_topic' value='$(arg external_route_topic)'/>
+  </include> 
+
+  <include file="$(env TEAM_CODE_ROOT)/autoware_launch/localization.launch">  	
+    <arg name="kml_map_path" value='$(arg kml_map_path)'/>
+  </include>   
+
+  <include file="$(env TEAM_CODE_ROOT)/autoware_launch/op_common_params.launch">  
+	  <arg name="op_logs_experiment_folder_name" value='$(arg op_logs_experiment_folder_name)'/>
+	  <arg name="kml_map_path" value='$(arg kml_map_path)'/>
+  </include>
+
+  <include file="$(env TEAM_CODE_ROOT)/autoware_launch/ground_filter.launch"/>
+
+  <include file="$(env TEAM_CODE_ROOT)/autoware_launch/object_detection_tracking.launch">  	
+  	<arg name='enable_openplanner_simulation' value='$(arg enable_openplanner_simulation)'/>
+  	<arg name='enable_object_insert' value='$(arg enable_object_insert)'/>
+  </include>
+
+ <include file="$(env TEAM_CODE_ROOT)/autoware_launch/op_local_planner.launch">  
+  	<arg name='enable_openplanner_simulation' value='$(arg enable_openplanner_simulation)'/>
+  	<arg name='enable_object_insert' value='$(arg enable_object_insert)'/>
+	<arg name="kml_map_path" value='$(arg kml_map_path)'/>
+  </include> 
+  
+ <include file="$(env TEAM_CODE_ROOT)/autoware_launch/high_level_controller_ff.launch"/>  -->
+
+</launch>

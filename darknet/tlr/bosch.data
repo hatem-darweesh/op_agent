@@ -1,0 +1,5 @@
+classes= 8
+train  = traffic-lights-4/train.txt
+valid  = traffic-lights-4/test.txt
+names = traffic-lights-4/bosch.names
+backup = traffic-lights-4/backup

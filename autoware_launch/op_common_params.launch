@@ -1,0 +1,76 @@
+<!-- -->
+<launch>
+<arg name="op_logs_experiment_folder_name" default=""/>
+<arg name="kml_map_path" default=""/>
+
+  <!-- 
+    # open planner common params #
+    @todo: still required?
+  -->
+<include file="$(find op_local_planner)/launch/op_common_params.launch">
+	<arg name="mapSource" 					default="2" /> <!-- Autoware=0, Vector Map Folder=1, kml=2 -->
+	<arg name="mapFileName" 				value='$(arg kml_map_path)' />	
+		
+	<arg name="pathDensity" 				default="0.5" />
+	<arg name="rollOutDensity" 				default="0.5" />
+	<arg name="rollOutsNumber" 				default="0" />
+
+	<arg name="maxLocalPlanDistance" 		default="80" />	
+	<arg name="horizonDistance" 			default="80" />
+	
+	<arg name="minFollowingDistance" 		default="40.0" /> <!-- should be bigger than Distance to follow -->	
+	<arg name="minDistanceToAvoid" 			default="20.0" /> <!-- should be smaller than minFollowingDistance and larger than maxDistanceToAvoid -->
+	<arg name="maxDistanceToAvoid" 			default="10.0" /> <!-- should be smaller than minDistanceToAvoid -->
+	<arg name="speedProfileFactor"			default="4.0" /> <!-- how fast the vehicle should drive through the corners and curves, less than (1) means slower speeds in the curves, larger than (1) means faster in the curves -->
+	<arg name="curveSlowDownRatio" 			default="1.5" /> <!-- how early or late to brake for upcoming turn. 1 is automatically as openplanner calculates it, Smaller than 1 means late braking, greater than 1 means brake early, this value is a ratio -->
+	
+	<arg name="smoothingDataWeight"			default="0.48" />
+	<arg name="smoothingSmoothWeight"		default="0.2" />	
+	
+	<arg name="horizontalSafetyDistance"	default="0.4" />
+	<arg name="verticalSafetyDistance"		default="0.5" />
+	
+	<arg name="enableSwerving" 				default="false" />
+	<arg name="enableFollowing" 			default="true" />	
+	<arg name="enableTrafficLightBehavior"  default="true" />
+	<arg name="enableStopSignBehavior" 		default="false" />	
+	<arg name="enableLaneChange" 			default="false" />	
+	
+	<!-- Vehicle Info, shared with controller and simulation -->
+	<arg name="height" 						default="1.47" />
+	<arg name="front_length"				default="1.0" />
+	<arg name="back_length"					default="0.6" />
+	<arg name="width" 						default="1.85" />
+	<arg name="length" 						default="4.2" />
+	<arg name="wheelBaseLength" 			default="2.7" />
+	<arg name="turningRadius"				default="5.2" />
+	<arg name="maxWheelAngle" 				default="0.45" /> <!-- radians -->
+	<arg name="steeringDelay" 				default="0.0" /> <!-- time steering wheel take to turn from zero to max left or right, maximum 3 seconds -->
+	<arg name="minPursuiteDistance" 		default="3.0" /> <!-- min distance to forward following target point on the trajectory  -->
+	<arg name="maxVelocity" 				default="20.0" /> <!-- m/s -->
+	<arg name="minVelocity" 				default="0.0" /> <!-- m/s -->
+	<arg name="maxAcceleration" 			default="3" /> 
+	<arg name="maxDeceleration" 			default="-3" />
+	<!-- ................................................... -->
+		
+	<!-- Internal ACC parameters, only used inside the LocalPlanner (Behavior Selector node) -->
+	<arg name="use_internal_acc" 			default="false" /> <!-- If enabled, the velocity associated with the final trajectory is the final speed profile needed to be followed by the controller, including following and stopping -->
+	<arg name="accelerationPushRatio" 		default="15" /> <!-- push the velocity to increase even when the velocity feedback signal from sensing is very small or delayed, contribute to final acceleration. where 1 predefined acceleration value is used -->
+	<arg name="brakingPushRatio" 			default="8" />	<!-- push the velocity to decrease even when the velocity feedback signal from sensing is very small or delayed, contribute to final deceleration. where 1 predefined deceleration value is used-->
+	<!-- ................................................... -->
+
+	<arg name="additionalBrakingDistance"   default="4.0" />	
+	<arg name="goalDiscoveryDistance" 		default="1.0" />
+	<arg name="giveUpDistance" 				default="-4.0" />
+			
+	<arg name="velocitySource"				default="0" /> <!-- read velocities from (0- Odometry, 1- autoware current_velocities, 2- car_info 3- vehicle status) -->
+	<arg name="vel_odom_topic"				default="/odom" />
+	<arg name="vel_curr_topic"				default="/current_velocity" />
+	<arg name="vel_can_topic"				default="/can_info" />
+	<arg name="vehicle_status_topic"		default="/vehicle_status" />
+	<arg name="experimentName" 				value='$(arg op_logs_experiment_folder_name)' />
+	<arg name="objects_input_topic" 		default="/detection/contour_tracker/objects" />
+	
+  </include> 
+
+</launch>
