@@ -1,5 +1,5 @@
-# op_agent
-OpenPlanner Agent for CARLA Simulator
+# op_agent - OpenPlanner Agent for CARLA Simulator
+
 
 Additional missing [data](https://drive.google.com/drive/folders/1Or0CMS08AW8XvJtzzR8TfhqdY9MMUBpS?usp=sharing): 
 - PointCloud .pcd Maps 
@@ -18,6 +18,11 @@ export PYTHONPATH=$PYTHONPATH:${CARLA_ROOT}/PythonAPI/carla
 export PYTHONPATH=$PYTHONPATH:${CARLA_ROOT}/PythonAPI/carla/agents
 export PYTHONPATH=$PYTHONPATH:${CARLA_ROOT}/PythonAPI/carla/dist/carla-0.9.13-py2.7-linux-x86_64.egg
 ```
+
+How to configure the agent's parameters (Autoware & OpenPlanner parameters): 
+- Check .launch files inside "autoware_launch" folder. 
+- Edit op_global_planner.launch "enableExploreMode" to enable or disable random global path generation. 
+- For the route based scenarios, "external_waypoints_topic" must be set in "bridge2autoware.launch" to /carla/ego_vehicle/waypoints
 
 How to run the agent: 
 Using three .sh options from op_bridge project: 
