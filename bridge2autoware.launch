@@ -5,7 +5,8 @@
   <arg name='map_name' default='Town01'/>  
   <arg name="kml_map_path" default="$(env TEAM_CODE_ROOT)/autoware-contents/maps/vector_maps/kml/$(arg map_name).kml"/>
   <arg name="pointcloud_map_path" default="$(env TEAM_CODE_ROOT)/autoware-contents/maps/point_cloud_maps/$(arg map_name).pcd"/>
-  <arg name="external_route_topic" 	default="/carla/ego_vehicle/waypoints" />	<!--/carla/ego_vehicle/waypoints -->
+  <arg name="external_route_topic" default='' />
+  <arg name='explore_mode' default='false'/>
 
   <!--
     ##################
@@ -39,6 +40,7 @@
     <arg name='kml_map_path' value='$(arg kml_map_path)'/>
     <arg name='pointcloud_map_path' value='$(arg pointcloud_map_path)'/>        
     <arg name='external_route_topic' value='$(arg external_route_topic)'/>
+    <arg name='explore_mode' value='$(arg explore_mode)'/>
   </include> 
 
   

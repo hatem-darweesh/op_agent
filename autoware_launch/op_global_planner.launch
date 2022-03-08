@@ -3,6 +3,7 @@
 <arg name="op_logs_experiment_folder_name" default=""/>
 <arg name="kml_map_path" default=""/>
 <arg name='external_route_topic' default=''/>
+<arg name='explore_mode' default='false'/>
 
   <!-- 
     # open planner, global planner params #
@@ -26,7 +27,7 @@
 	<arg name="lanelet2_origin"		default="0,0,0" /> <!-- GPS origin for lanelet2 map files, Lat, Long, Alt  --> 	
 	<arg name="destinationFileName" default="" />		
 	<arg name="external_waypoints_topic" value="$(arg external_route_topic)" />	<!-- if topic name is assigned, global planner will wait for the external path, not global path will be generated -->	
-	<arg name="enableExploreMode" 	value="false" />	<!-- if true, the external waypoints will not be used, the new global plan will be generated randomly and replanning will be enabled, and lane change will be disabled, and enableRvizInput will be disabled -->
+	<arg name="enableExploreMode" 	value="$(arg explore_mode)" />	<!-- if true, the external waypoints will not be used, the new global plan will be generated randomly and replanning will be enabled, and lane change will be disabled, and enableRvizInput will be disabled -->
   </include> 
 
 

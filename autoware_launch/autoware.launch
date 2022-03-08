@@ -6,6 +6,7 @@
   <arg name="kml_map_path" default=""/>
   <arg name="pointcloud_map_path" default=""/>    
   <arg name='external_route_topic' default=''/>
+  <arg name='explore_mode' default='false'/>
  
 
  <!-- <node pkg="carla_vel_to_autoware" type="carla2autowarestatus" name="carla2autowarestatus" output="screen"/>   -->
@@ -16,6 +17,7 @@
 	  <arg name="op_logs_experiment_folder_name" value='$(arg op_logs_experiment_folder_name)'/>
 	  <arg name="kml_map_path" value='$(arg kml_map_path)'/>    
     <arg name='external_route_topic' value='$(arg external_route_topic)'/>
+    <arg name='explore_mode' value='$(arg explore_mode)'/>
   </include> 
 
   <include file="$(env TEAM_CODE_ROOT)/autoware_launch/localization.launch">  	
@@ -40,6 +42,6 @@
 	<arg name="kml_map_path" value='$(arg kml_map_path)'/>
   </include> 
   
- <include file="$(env TEAM_CODE_ROOT)/autoware_launch/high_level_controller_ff.launch"/>  -->
+ <include file="$(env TEAM_CODE_ROOT)/autoware_launch/high_level_controller_ff.launch"/> 
 
 </launch>
