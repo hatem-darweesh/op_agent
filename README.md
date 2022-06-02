@@ -19,8 +19,14 @@ export PYTHONPATH=$PYTHONPATH:${CARLA_ROOT}/PythonAPI/carla/agents
 export PYTHONPATH=$PYTHONPATH:${CARLA_ROOT}/PythonAPI/carla/dist/carla-0.9.13-py2.7-linux-x86_64.egg
 ```
 
-### How to run the agent: 
+### How to run the agent for ROS1 (Autoware.AI): 
 Using three .sh options from op_bridge project: 
-- Environment Explore 
-- Scenario runner 
-- Route based scenario with CARLA leaderboard style 
+- Environment Explore -> run_exploration_mode.sh
+- Scenario runner -> run_srunner_agent.sh 
+- Route based scenario with CARLA leaderboard style -> run_route_scenarios.sh 
+
+### How to run the agent for ROS2 (Autoware.Universe): 
+Using three .sh options from op_bridge project: 
+- Environment Explore -> run_exploration_mode_ros2.sh
+- Scenario runner -> run_srunner_agent_ros2.sh 
+- Route based scenario with CARLA leaderboard style -> run_route_scenarios_ros2.sh 
