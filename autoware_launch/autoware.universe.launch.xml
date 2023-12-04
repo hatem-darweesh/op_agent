@@ -6,6 +6,10 @@
   <arg name="sensor_model" description="sensor model name"/>
   <arg name="use_pointcloud_container" default="true" description="launch pointcloud container"/>
   <arg name="pointcloud_container_name" default="pointcloud_container"/>
+  <arg name="data_path" default="$(env HOME)/autoware_data" description="packages data and artifacts directory path"/>
+
+  <!-- launch module preset -->
+  <arg name="planning_module_preset" default="default" description="planning module preset"/>
 
   <!-- Optional parameters -->
   <!-- Modules to be launched -->
@@ -15,25 +19,31 @@
   <arg name="launch_sensing" default="true" description="launch sensing"/>
   <arg name="launch_sensing_driver" default="true" description="launch sensing driver"/>
   <arg name="launch_localization" default="true" description="launch localization"/>
-  <arg name="launch_perception" default="true" description="launch perception"/>
-  <arg name="launch_planning" default="true" description="launch planning"/>
-  <arg name="launch_control" default="true" description="launch control"/>
+  <arg name="launch_perception" default="false" description="launch perception"/>
+  <arg name="launch_planning" default="false" description="launch planning"/>
+  <arg name="launch_control" default="false" description="launch control"/>
   <!-- Global parameters -->
   <arg name="use_sim_time" default="false" description="use_sim_time"/>
   <!-- Vehicle -->
   <arg name="vehicle_id" default="$(env VEHICLE_ID default)" description="vehicle specific ID"/>
   <arg name="launch_vehicle_interface" default="true" description="launch vehicle interface"/>
+  <!-- Control -->
+  <arg name="check_external_emergency_heartbeat" default="false"/>
   <!-- Map -->
   <arg name="lanelet2_map_file" default="lanelet2_map.osm" description="lanelet2 map file name"/>
   <arg name="pointcloud_map_file" default="pointcloud_map.pcd" description="pointcloud map file name"/>
   <!-- System -->
   <arg name="system_run_mode" default="online" description="run mode in system"/>
-  <!-- API -->
-  <arg name="init_simulator_pose" default="false" description="initialize simulator pose"/>
+  <arg name="launch_system_monitor" default="true" description="launch system monitor"/>
+  <arg name="launch_dummy_diag_publisher" default="false" description="launch dummy diag publisher"/>
+  <arg name="system_error_monitor_param_path" default="$(find-pkg-share autoware_launch)/config/system/system_error_monitor/system_error_monitor.param.yaml"/>
   <!-- Tools -->
   <arg name="rviz" default="true" description="launch rviz"/>
   <arg name="rviz_config" default="$(find-pkg-share autoware_launch)/rviz/autoware.rviz" description="rviz config"/>
-  <arg name="launch_web_controller" default="true" description="launch web controller"/>
+  <arg name="rviz_respawn" default="true"/>
+  <!-- Perception -->
+  <arg name="perception_mode" default="lidar" description="select perception mode. camera_lidar_radar_fusion, camera_lidar_fusion, lidar_radar_fusion, lidar, radar"/>
+  <arg name="traffic_light_recognition/enable_fine_detection" default="true" description="enable traffic light fine detection"/>
 
   <!-- Global parameters -->
   <group scoped="false">
@@ -58,81 +68,69 @@
       <arg name="sensor_model" value="$(var sensor_model)"/>
       <arg name="vehicle_id" value="$(var vehicle_id)"/>
       <arg name="launch_vehicle_interface" value="$(var launch_vehicle_interface)"/>
+      <arg name="config_dir" value="$(find-pkg-share individual_params)/config/$(var vehicle_id)/$(var sensor_model)"/>
     </include>
   </group>
 
   <!-- System -->
   <group if="$(var launch_system)">
-    <include file="$(find-pkg-share tier4_system_launch)/launch/system.launch.xml">
-      <arg name="run_mode" value="$(var system_run_mode)"/>
-      <arg name="sensor_model" value="$(var sensor_model)"/>
-    </include>
+    <include file="$(find-pkg-share autoware_launch)/launch/components/tier4_system_component.launch.xml"/>
   </group>
 
   <!-- Map -->
   <group if="$(var launch_map)">
-    <include file="$(find-pkg-share tier4_map_launch)/launch/map.launch.py">
-      <arg name="lanelet2_map_path" value="$(var map_path)/$(var lanelet2_map_file)"/>
-      <arg name="pointcloud_map_path" value="$(var map_path)/$(var pointcloud_map_file)"/>
-    </include>
+    <include file="$(find-pkg-share autoware_launch)/launch/components/tier4_map_component.launch.xml"/>
   </group>
 
   <!-- Sensing -->
+
+  <group>
+	  <node pkg="carla_pointcloud" exec="carla_pointcloud_node" name="carla_pointcloud_interface" output="screen"/>
+  </group>
+
   <group if="$(var launch_sensing)">
-    <include file="$(find-pkg-share tier4_sensing_launch)/launch/sensing.launch.xml">
-      <arg name="launch_driver" value="$(var launch_sensing_driver)"/>
-      <arg name="sensor_model" value="$(var sensor_model)"/>
-      <arg name="vehicle_param_file" value="$(find-pkg-share $(var vehicle_model)_description)/config/vehicle_info.param.yaml"/>
-      <arg name="vehicle_mirror_param_file" value="$(find-pkg-share $(var vehicle_model)_description)/config/mirror.param.yaml"/>
-      <arg name="use_pointcloud_container" value="$(var use_pointcloud_container)"/>
-      <arg name="pointcloud_container_name" value="$(var pointcloud_container_name)"/>
-    </include>
+    <include file="$(find-pkg-share autoware_launch)/launch/components/tier4_sensing_component.launch.xml"/>
   </group>
 
   <!-- Localization -->
   <group if="$(var launch_localization)">
-    <include file="$(find-pkg-share tier4_localization_launch)/launch/localization.launch.xml"/>
+    <include file="$(find-pkg-share autoware_launch)/launch/components/tier4_localization_component.launch.xml"/>
   </group>
 
   <!-- Perception -->
   <group if="$(var launch_perception)">
-    <include file="$(find-pkg-share tier4_perception_launch)/launch/perception.launch.xml">
-      <arg name="mode" value="lidar"/>
-      <arg name="vehicle_param_file" value="$(find-pkg-share $(var vehicle_model)_description)/config/vehicle_info.param.yaml"/>
-      <arg name="use_pointcloud_container" value="$(var use_pointcloud_container)"/>
-      <arg name="pointcloud_container_name" value="$(var pointcloud_container_name)"/>
+    <include file="$(find-pkg-share autoware_launch)/launch/components/tier4_perception_component.launch.xml">
+      <arg name="data_path" value="$(var data_path)"/>
     </include>
   </group>
 
   <!-- Planning -->
   <group if="$(var launch_planning)">
-    <include file="$(find-pkg-share tier4_planning_launch)/launch/planning.launch.xml">
-      <arg name="vehicle_info_param_file" value="$(find-pkg-share $(var vehicle_model)_description)/config/vehicle_info.param.yaml"/>
-      <arg name="use_pointcloud_container" value="$(var use_pointcloud_container)"/>
-      <arg name="pointcloud_container_name" value="$(var pointcloud_container_name)"/>
+    <include file="$(find-pkg-share autoware_launch)/launch/components/tier4_planning_component.launch.xml">
+      <arg name="module_preset" value="$(var planning_module_preset)"/>
     </include>
   </group>
 
   <!-- Control -->
   <group if="$(var launch_control)">
-    <include file="$(find-pkg-share tier4_control_launch)/launch/control.launch.py">
-      <arg name="lateral_controller_mode" value="mpc_follower"/>
-      <arg name="vehicle_info_param_file" value="$(find-pkg-share $(var vehicle_model)_description)/config/vehicle_info.param.yaml"/>
-    </include>
+    <include file="$(find-pkg-share autoware_launch)/launch/components/tier4_control_component.launch.xml"/>
   </group>
 
   <!-- API -->
-  <include file="$(find-pkg-share tier4_autoware_api_launch)/launch/autoware_api.launch.xml">
-    <arg name="init_simulator_pose" value="$(var init_simulator_pose)"/>
-    <arg name="init_localization_pose" value="$(var launch_localization)"/>
-  </include>
+  <group>
+    <include file="$(find-pkg-share autoware_launch)/launch/components/tier4_autoware_api_component.launch.xml"/>
+  </group>
 
   <!-- Tools -->
   <group>
-    <!-- Rviz -->
-    <node pkg="rviz2" exec="rviz2" name="rviz2" output="screen" args="-d $(var rviz_config) -s $(find-pkg-share autoware_launch)/rviz/image/autoware.png" if="$(var rviz)"/>
-
-    <!-- Web Controller -->
-    <include file="$(find-pkg-share web_controller)/launch/web_controller.launch.xml" if="$(var launch_web_controller)"/>
+    <node
+      pkg="rviz2"
+      exec="rviz2"
+      name="rviz2"
+      output="screen"
+      args="-d $(var rviz_config) -s $(find-pkg-share autoware_launch)/rviz/image/autoware.png"
+      if="$(var rviz)"
+      respawn="$(var rviz_respawn)"
+    />
   </group>
 </launch>
