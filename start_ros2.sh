@@ -12,6 +12,7 @@ echo $explore_mode
 echo $route_topic
 echo "-------------------------------"
 
-#ros2 launch ${TEAM_CODE_ROOT}/autoware_launch/universe.launch.xml map_path:=/home/hatem/Data/autoware_uni_sample_data/${map_name} vehicle_model:=sample_vehicle sensor_model:=sample_sensor_kit
-# ros2 launch /home/hatem/hatem-repos/autoware/autoware/src/launcher/autoware_launch/autoware_launch/launch/autoware.launch.xml map_path:=/home/hatem/Data/autoware_uni_sample_data/${map_name} vehicle_model:=sample_vehicle sensor_model:=sample_sensor_kit
-$SHELL
+# ros2 launch /home/hatem/carla/op_agent/autoware_carla_launch/carla_autoware_sensors_interface.xml
+ros2 launch ${OP_AGENT_ROOT}/autoware_carla_launch/carla_simulator.launch.xml map_path:=${OP_AGENT_ROOT}/autoware-contents/maps/$map_name vehicle_model:=sample_vehicle sensor_model:=carla_sensor_kit
+# $SHELL
+

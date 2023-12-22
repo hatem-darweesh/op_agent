@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <group>
+	  <node pkg="carla_pointcloud" exec="carla_pointcloud_node" name="carla_pointcloud_interface" output="screen"/>
+  </group>   
+
+  <group>
+	  <node pkg="op_fix2pose" exec="op_fix2pose_node" name="op_fix2pose_interface" output="screen"/>
+  </group>  
+
+
+    <group>
+    <node
+      pkg="rviz2"
+      exec="rviz2"
+      name="rviz2"
+      output="screen"
+      args="-d /home/hatem/carla/op_agent/rviz/carla_autoware.rviz -s /home/hatem/carla/op_agent/rviz/image/autoware.png"      
+      respawn="false"
+    />
+  </group>
+
+</launch>
