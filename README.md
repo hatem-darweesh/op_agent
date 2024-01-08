@@ -18,8 +18,8 @@
 - PointCloud .pcd Maps 
 - Yolo weights files
 
-### Note: 
-Copy the downloaded map folder which contains (Lanelet2_map.osm, pointcloud_map.pcd, and map_projector_info.yaml) to the op_agent folder: 
+### Important Note for HD Map: 
+- Copy the downloaded map folder which contains (Lanelet2_map.osm, pointcloud_map.pcd, and map_projector_info.yaml) to the op_agent folder: 
 /home/user/carla/op_agent/autoware-contents/maps/Town01
 /home/user/carla/op_agent/autoware-contents/maps/Town02
 ... 
