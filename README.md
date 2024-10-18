@@ -1,4 +1,5 @@
 # op_agent - OpenPlanner Agent for CARLA Simulator
+![CARLA - OpenPlanner Universe - Bridge - Setup and Run - ubuntu 22 04 -2023](https://github.com/user-attachments/assets/c12100c7-a2f6-4ab2-ad20-7f16eeee8790)
 
 ## Last Update: December 2023, Working on Ubuntu 22.04 and ROS2 humble. Thanks to https://github.com/gezp this is possible. 
 - Make sure to Download the Python egg for 3.10 from [here](https://github.com/gezp/carla_ros/releases/tag/carla-0.9.15-ubuntu-22.04). 
